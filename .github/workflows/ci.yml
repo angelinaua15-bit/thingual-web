@@ -35,13 +35,20 @@ jobs:
           git diff --exit-code -- assets/css/styles.css \
             || (echo "::error file=assets/css/styles.css::Запустіть npm run build:css і закомітьте styles.css" && exit 1)
       - name: Синтаксис JavaScript
-        run: for f in assets/js/*.js scripts/*.mjs; do node --check "$f" || exit 1; done
+        run: |
+          shopt -s nullglob
+          files=(assets/js/*.js scripts/*.mjs tests/*.js)
+          test ${#files[@]} -gt 0 || { echo "::error::Не знайдено JS-файлів"; exit 1; }
+          for f in "${files[@]}"; do node --check "$f" || exit 1; done
       - name: Автотести логіки (тест рівня, Лейтнер, план, RegEx форми)
         run: npm test
       - name: Структура data.json і ілюстрації
         run: npm run check:data
       - name: Валідація HTML
         run: npm run validate:html
+      - name: Усі сторінки з карти сайту існують
+        run: |
+          for p in index dictionary trainer about contact 404; do test -f "$p.html" || { echo "::error::Немає $p.html"; exit 1; }; done
       - name: vercel.json — валідний JSON
         run: node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"
 
