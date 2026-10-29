@@ -1,0 +1,4 @@
+node_modules/
+.lighthouseci/
+.vercel/
+.DS_Store

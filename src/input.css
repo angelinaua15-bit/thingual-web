@@ -1,0 +1,69 @@
+/* Thingual Web — вхідний файл Tailwind. Збірка: npm run build:css → assets/css/styles.css */
+/* font-display: optional — якщо шрифт не встиг за ~100 мс, лишається системний, і текст не «стрибає» (CLS); з кешу шрифти беруться одразу. */
+@font-face { font-family: 'Inter'; font-weight: 400; font-display: optional; src: url(../fonts/inter-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Inter'; font-weight: 400; font-display: optional; src: url(../fonts/inter-cyrillic-400-normal.woff2) format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Inter'; font-weight: 600; font-display: optional; src: url(../fonts/inter-latin-600-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Inter'; font-weight: 600; font-display: optional; src: url(../fonts/inter-cyrillic-600-normal.woff2) format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+/* Дисплейний шрифт: Instrument Serif (бренд застосунку) для латиниці + Cormorant Garamond для кирилиці */
+@font-face { font-family: 'Thingual Display'; font-weight: 400; font-display: optional; src: url(../fonts/instrument-serif-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC; }
+@font-face { font-family: 'Thingual Display'; font-style: italic; font-weight: 400; font-display: optional; src: url(../fonts/instrument-serif-latin-400-italic.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+20AC; }
+@font-face { font-family: 'Thingual Display'; font-weight: 400; font-display: optional; src: url(../fonts/cormorant-garamond-cyrillic-600-normal.woff2) format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; size-adjust: 112%; }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Токени з застосунку (src/theme) у форматі "R G B" */
+  :root {
+    --bg: 250 250 248; --surface: 255 255 255; --surface-alt: 242 241 237;
+    --ink: 20 20 20; --muted: 92 92 92; --line: 222 220 214;
+    --accent: 59 91 219; --on-accent: 255 255 255;
+    --drop: 194 65 12; --ok: 36 120 52; --bad: 201 42 42;
+    color-scheme: light;
+  }
+  .dark {
+    --bg: 11 33 41; --surface: 17 46 54; --surface-alt: 23 54 63;
+    --ink: 238 244 241; --muted: 159 181 176; --line: 40 72 80;
+    --accent: 124 155 255; --on-accent: 11 33 41;
+    --drop: 255 138 91; --ok: 81 207 102; --bad: 255 107 107;
+    color-scheme: dark;
+  }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
+  body { @apply bg-bg text-ink font-sans antialiased; }
+  h1, h2, h3 { text-wrap: balance; }
+  :focus-visible { outline: 3px solid rgb(var(--accent)); outline-offset: 3px; border-radius: 6px; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-page px-4 sm:px-6 lg:px-8; }
+  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-primary { @apply btn bg-accent text-on-accent hover:bg-accent/90; }
+  .btn-secondary { @apply btn border border-line bg-surface text-ink hover:border-accent hover:text-accent; }
+  .btn-ghost { @apply btn bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20; }
+  .card { @apply rounded-l border border-line bg-surface; }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.12em] text-muted; }
+  .field-label { @apply mb-1.5 block text-sm font-semibold; }
+  .field { @apply block w-full min-h-[48px] rounded-s border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/80 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 aria-[invalid=true]:border-bad aria-[invalid=true]:ring-bad/20; }
+  .error-text { @apply mt-1.5 min-h-[1.25rem] text-sm text-bad; }
+  .chip { @apply inline-flex min-h-[40px] items-center rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink transition-colors hover:border-accent aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-on-accent; }
+  .nav-link { @apply rounded-full px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-ink aria-[current=page]:bg-surface-alt aria-[current=page]:text-ink; }
+  .skip-link { @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-accent focus:px-5 focus:py-3 focus:text-on-accent; }
+  /* Фон бренду (як іконка застосунку): глибокий зелений → нічний синій + «зорі» */
+  .brand-gradient {
+    background-color: #0B2238;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,.6) 50%, transparent 51%),
+      radial-gradient(1px 1px at 68% 14%, rgba(255,255,255,.55) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 84% 62%, rgba(255,255,255,.65) 50%, transparent 51%),
+      radial-gradient(1px 1px at 30% 78%, rgba(255,255,255,.45) 50%, transparent 51%),
+      radial-gradient(1px 1px at 52% 40%, rgba(255,255,255,.4) 50%, transparent 51%),
+      radial-gradient(1px 1px at 92% 30%, rgba(255,255,255,.55) 50%, transparent 51%),
+      radial-gradient(120% 90% at 85% 10%, #0E3B32 0%, #0B2238 55%, #0A1A33 100%);
+  }
+  .word-lang { unicode-bidi: isolate; }
+}

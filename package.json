@@ -1,0 +1,21 @@
+{
+  "name": "thingual-web",
+  "version": "1.0.0",
+  "description": "Thingual Web — вебкомпаньйон мовного застосунку Thingual: словник 16 мовами, тест рівня, картки Лейтнера, план навчання.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Angelina Ivaniv (ПП-25, Lviv Polytechnic)",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i src/input.css -o assets/css/styles.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i src/input.css -o assets/css/styles.css --watch",
+    "test": "node --test tests/*.test.js",
+    "validate:html": "html-validate *.html",
+    "check:data": "node scripts/check-data.mjs",
+    "serve": "npx --yes serve@14 -l 3000 ."
+  },
+  "devDependencies": {
+    "html-validate": "9.7.1",
+    "tailwindcss": "3.4.17"
+  }
+}
