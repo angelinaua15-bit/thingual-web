@@ -1,0 +1,67 @@
+# CI/CD Thingual Web: кожен push і pull request у main проходить перевірки.
+# Публікацію на Vercel виконує Git-інтеграція Vercel: production оновлюється з main автоматично.
+# CI — це «ворота якості»: червоний запуск видно біля коміту, а pull request з помилками не варто зливати.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Якість коду
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Tailwind CSS зібрано з актуального коду
+        run: |
+          npm run build:css
+          git diff --exit-code -- assets/css/styles.css \
+            || (echo "::error file=assets/css/styles.css::Запустіть npm run build:css і закомітьте styles.css" && exit 1)
+      - name: Синтаксис JavaScript
+        run: for f in assets/js/*.js scripts/*.mjs; do node --check "$f" || exit 1; done
+      - name: Автотести логіки (тест рівня, Лейтнер, план, RegEx форми)
+        run: npm test
+      - name: Структура data.json і ілюстрації
+        run: npm run check:data
+      - name: Валідація HTML
+        run: npm run validate:html
+      - name: vercel.json — валідний JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"
+
+  lighthouse:
+    name: Lighthouse CI
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Lighthouse (5 сторінок, пороги 0.9 для a11y / BP / SEO)
+        run: npx --yes @lhci/cli@0.15.1 autorun
+      - name: Звіти як артефакт
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          include-hidden-files: true
+          retention-days: 14
